@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -30,8 +32,10 @@ public class SecurityConfiguration {
                 (requests) ->
                         requests
                                 .requestMatchers("/restricted/**").authenticated()
-                                .requestMatchers("/open/**","/actuator/**").permitAll()
-        );
+                                .requestMatchers("/open/**","/actuator/**","/h2-console/**","/register").permitAll()
+                                //.anyRequest().permitAll()
+        )
+                .csrf(AbstractHttpConfigurer::disable).headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
         http.formLogin(withDefaults());
         /*http.formLogin(AbstractHttpConfigurer::disable);*/ //for disabling form login
         http.httpBasic(withDefaults());
@@ -39,7 +43,7 @@ public class SecurityConfiguration {
     }
 
     //Using in memory user details
-    @Bean
+    /*@Bean
     UserDetailsService userDetailsService() {
         UserDetails user = withUsername(configProperties.getUserName())
                 .password(configProperties.getUserPassword())
@@ -50,7 +54,7 @@ public class SecurityConfiguration {
                 .authorities(configProperties.getAdminAuthority())
                 .build();
         return new InMemoryUserDetailsManager(user, admin);
-    }
+    }*/
 
     //By default, will consider BcryptEncoder
     @Bean
