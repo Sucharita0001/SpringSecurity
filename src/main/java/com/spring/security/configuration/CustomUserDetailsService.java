@@ -19,7 +19,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Customer customer = this.customerRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not present with email " + username));
+        Customer customer = this.customerRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not present with email " + username));
         return new User(username, customer.getPassword(), of(new SimpleGrantedAuthority(customer.getRole())));
     }
 }

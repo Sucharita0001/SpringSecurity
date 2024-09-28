@@ -1,10 +1,6 @@
 spring:
   application:
     name: security
-#  security:
-#    user:
-#      name: admin
-#      password: admin
   datasource:
     url: jdbc:h2:file:./data/mydb
     driver-class-name: org.h2.Driver
@@ -19,12 +15,3 @@ spring:
 
 server:
   port: 10
-
-additional:
-  users:
-    user-name: ${BASIC_USER_NAME}
-    user-password: ${BASIC_USER_PASSWORD}
-    user-authority: ${BASIC_USER_AUTHORITY}
-    admin-name: ${ADMIN_NAME}
-    admin-password: ${ADMIN_PASSWORD}
-    admin-authority: ${ADMIN_AUTHORITY}
