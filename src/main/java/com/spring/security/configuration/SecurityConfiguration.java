@@ -36,8 +36,12 @@ public class SecurityConfiguration {
                 })).authorizeHttpRequests(
                         (requests) ->
                                 requests
-                                        .requestMatchers("/restricted/**").authenticated()
-                                        .requestMatchers("/open/**", "/actuator/**", "/h2-console/**", "/register").permitAll()
+                                        .requestMatchers("/open/**", "/actuator/**", "/h2-console/**", "/register/**").permitAll()
+                                        /*.requestMatchers("/restricted/admin").hasAuthority("admin")
+                                        .requestMatchers("/restricted").hasAnyAuthority("admin","general")*/ //implemented based on authorities
+                                        .requestMatchers("/restricted/admin").hasRole("ADMIN")
+                                        .requestMatchers("/restricted/user").hasRole("USER")
+                                        .requestMatchers("/restricted").hasAnyRole("USER","ADMIN")
                         //.anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable).headers(header -> header.frameOptions(FrameOptionsConfig::disable));
