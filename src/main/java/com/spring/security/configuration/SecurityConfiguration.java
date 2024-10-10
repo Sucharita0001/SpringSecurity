@@ -1,6 +1,7 @@
 package com.spring.security.configuration;
 
 import com.spring.security.exceptionHandler.CustomAuthenticationEntryPoint;
+import com.spring.security.filter.EmailIdDomainValidationFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -24,7 +26,9 @@ public class SecurityConfiguration {
     //For configuring which endpoint should be restricted or open
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(new CorsConfigurationSource() {
+        http
+                .addFilterBefore(new EmailIdDomainValidationFilter(), BasicAuthenticationFilter.class)
+                .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration configuration = new CorsConfiguration();
@@ -41,7 +45,7 @@ public class SecurityConfiguration {
                                         .requestMatchers("/restricted").hasAnyAuthority("admin","general")*/ //implemented based on authorities
                                         .requestMatchers("/restricted/admin").hasRole("ADMIN")
                                         .requestMatchers("/restricted/user").hasRole("USER")
-                                        .requestMatchers("/restricted").hasAnyRole("USER","ADMIN")
+                                        .requestMatchers("/restricted").hasAnyRole("USER", "ADMIN")
                         //.anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable).headers(header -> header.frameOptions(FrameOptionsConfig::disable));

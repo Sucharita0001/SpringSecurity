@@ -13,7 +13,8 @@ This application for spring security.
 > > ### Restricted endpoints
 > > > /restricted, /restricted/admin, /restricted/user
 > > ### Sample user register body 
-> > > ![img_2.png](img_2.png) After this user creation restricted endpoint can be opened with valid credential (in this case user: user103@test.com, password: user103)
+> > > ![img_1.png](img_1.png)
+> > >  After this user creation restricted endpoint can be opened with valid credential (in this case user: user101@dev.com, password: user@#$dev101)
 
 > ## If password is not strong, it will give error as 
 > ![img.png](img.png)
