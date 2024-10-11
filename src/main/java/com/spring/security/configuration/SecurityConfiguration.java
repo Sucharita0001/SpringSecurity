@@ -3,13 +3,13 @@ package com.spring.security.configuration;
 import com.spring.security.exceptionHandler.CustomAccessDeniedHandler;
 import com.spring.security.exceptionHandler.CustomAuthenticationEntryPoint;
 import com.spring.security.filter.EmailIdDomainValidationFilter;
-import com.spring.security.filter.JwtTokenGeneratorFilter;
 import com.spring.security.filter.JwtTokenValidatorFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
@@ -20,8 +20,6 @@ import org.springframework.security.web.authentication.password.HaveIBeenPwnedRe
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.util.List;
 
 import static java.util.List.of;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -38,7 +36,6 @@ public class SecurityConfiguration {
                 .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(new EmailIdDomainValidationFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
@@ -54,7 +51,7 @@ public class SecurityConfiguration {
                 })).authorizeHttpRequests(
                         (requests) ->
                                 requests
-                                        .requestMatchers("/open/**", "/actuator/**", "/h2-console/**", "/register/**").permitAll()
+                                        .requestMatchers("/open", "/actuator", "/h2-console/**", "/register","/apiLogin").permitAll()
                                         /*.requestMatchers("/restricted/admin").hasAuthority("admin")
                                         .requestMatchers("/restricted").hasAnyAuthority("admin","general")*/ //implemented based on authorities
                                         .requestMatchers("/restricted/admin").hasRole("ADMIN")
@@ -88,5 +85,10 @@ public class SecurityConfiguration {
     @Bean
     CompromisedPasswordChecker compromisedPasswordChecker() {
         return new HaveIBeenPwnedRestApiPasswordChecker();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 }
