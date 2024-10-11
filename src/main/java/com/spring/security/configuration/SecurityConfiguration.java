@@ -1,14 +1,17 @@
 package com.spring.security.configuration;
 
+import com.spring.security.exceptionHandler.CustomAccessDeniedHandler;
 import com.spring.security.exceptionHandler.CustomAuthenticationEntryPoint;
 import com.spring.security.filter.EmailIdDomainValidationFilter;
+import com.spring.security.filter.JwtTokenGeneratorFilter;
+import com.spring.security.filter.JwtTokenValidatorFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +21,12 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.List;
+
+import static java.util.List.of;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.security.config.Customizer.withDefaults;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 public class SecurityConfiguration {
@@ -27,7 +35,10 @@ public class SecurityConfiguration {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+                .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(new EmailIdDomainValidationFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenValidatorFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
@@ -35,6 +46,9 @@ public class SecurityConfiguration {
                         configuration.addAllowedHeader("*");
                         configuration.addAllowedMethod("*");
                         configuration.addAllowedOrigin("*");
+                        configuration.setAllowCredentials(true);
+                        configuration.setExposedHeaders(of(AUTHORIZATION));
+                        configuration.setMaxAge(60L);
                         return configuration;
                     }
                 })).authorizeHttpRequests(
@@ -46,6 +60,7 @@ public class SecurityConfiguration {
                                         .requestMatchers("/restricted/admin").hasRole("ADMIN")
                                         .requestMatchers("/restricted/user").hasRole("USER")
                                         .requestMatchers("/restricted").hasAnyRole("USER", "ADMIN")
+                                        .requestMatchers("/user").authenticated()
                         //.anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable).headers(header -> header.frameOptions(FrameOptionsConfig::disable));

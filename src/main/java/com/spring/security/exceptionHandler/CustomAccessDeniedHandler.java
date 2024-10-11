@@ -1,4 +1,4 @@
-package com.spring.security.configuration;
+package com.spring.security.exceptionHandler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,10 +7,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
-import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static java.lang.String.format;
 import static java.time.LocalDateTime.now;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
