@@ -57,7 +57,7 @@ public class SecurityConfiguration {
                                         .requestMatchers("/restricted/admin").hasRole("ADMIN")
                                         .requestMatchers("/restricted/user").hasRole("USER")
                                         .requestMatchers("/restricted").hasAnyRole("USER", "ADMIN")
-                                        .requestMatchers("/user").authenticated()
+                                        .requestMatchers("/user","/userDetails").authenticated()
                         //.anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable).headers(header -> header.frameOptions(FrameOptionsConfig::disable));

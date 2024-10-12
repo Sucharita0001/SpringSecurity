@@ -6,8 +6,12 @@ import com.spring.security.model.CustomerModel;
 import com.spring.security.repository.AuthorityRepository;
 import com.spring.security.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -42,5 +46,16 @@ public class CustomerService {
         } else {
             return null;
         }
+    }
+
+    @PostFilter("filterObject.authorities.contains('ROLE_ADMIN')")
+    public List<CustomerModel> getAdminUserDetails() {
+        return new ArrayList<>(this.customerRepository.findAll().stream().map(customer -> {
+            CustomerModel cust = new CustomerModel();
+            cust.setId(customer.getId());
+            cust.setEmail(customer.getEmail());
+            cust.setAuthorities(customer.getAuthorities().stream().map(Authority::getName).collect(toSet()));
+            return cust;
+        }).toList());
     }
 }

@@ -9,6 +9,8 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,6 +41,7 @@ public class LoginController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping(("/register"))
+    @PreAuthorize("!#customer.email.contains('@test')")
     public ResponseEntity<String> registerUser(@RequestBody Customer customer) {
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         this.customerService.saveCustomer(customer);
