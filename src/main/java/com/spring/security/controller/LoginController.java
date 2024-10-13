@@ -1,6 +1,7 @@
 package com.spring.security.controller;
 
 import com.spring.security.entity.Customer;
+import com.spring.security.exception.CustomerAlreadyExistsException;
 import com.spring.security.model.CustomerModel;
 import com.spring.security.model.LoginRequestDTO;
 import com.spring.security.model.LoginResponseDTO;
@@ -42,7 +43,7 @@ public class LoginController {
 
     @PostMapping(("/register"))
     @PreAuthorize("!#customer.email.contains('@test')")
-    public ResponseEntity<String> registerUser(@RequestBody Customer customer) {
+    public ResponseEntity<String> registerUser(@RequestBody Customer customer) throws CustomerAlreadyExistsException {
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         this.customerService.saveCustomer(customer);
         return new ResponseEntity<>("Customer created for user " + customer.getEmail(), HttpStatus.CREATED);

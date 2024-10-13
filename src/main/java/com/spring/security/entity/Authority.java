@@ -17,7 +17,7 @@ public class Authority {
     @GeneratedValue(strategy = AUTO)
     private long id;
     private String name;
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "customer_id")
     @JsonIgnore
     private Customer customer;

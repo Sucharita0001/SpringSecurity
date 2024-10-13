@@ -18,7 +18,6 @@ import static java.time.LocalDateTime.now;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@ControllerAdvice
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
@@ -28,10 +27,5 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         String message = "{\"error\":\"This page is forbidden.\",\"message\":\"%s\",\"timestamp\":\"%s\"}";
         String formattedMessage = format(message, accessDeniedException.getMessage(), now());
         response.getWriter().write(formattedMessage);
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
-        return new ResponseEntity<>("Email contains restricted content and cannot be used.", FORBIDDEN);
     }
 }

@@ -13,5 +13,5 @@ import java.util.Set;
 public class CustomerModel {
     private int id;
     private String email;
-    private Set<String> authorities;
+    private String authority;
 }

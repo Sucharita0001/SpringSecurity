@@ -7,6 +7,9 @@ import com.spring.security.filter.JwtTokenValidatorFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -23,6 +26,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import static java.util.List.of;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.fromHierarchy;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -51,13 +55,12 @@ public class SecurityConfiguration {
                 })).authorizeHttpRequests(
                         (requests) ->
                                 requests
-                                        .requestMatchers("/open", "/actuator", "/h2-console/**", "/register","/apiLogin").permitAll()
+                                        .requestMatchers("/open", "/actuator", "/h2-console/**", "/register", "/apiLogin").permitAll()
                                         /*.requestMatchers("/restricted/admin").hasAuthority("admin")
                                         .requestMatchers("/restricted").hasAnyAuthority("admin","general")*/ //implemented based on authorities
                                         .requestMatchers("/restricted/admin").hasRole("ADMIN")
-                                        .requestMatchers("/restricted/user").hasRole("USER")
-                                        .requestMatchers("/restricted").hasAnyRole("USER", "ADMIN")
-                                        .requestMatchers("/user","/userDetails").authenticated()
+                                        .requestMatchers("/restricted/user","/restricted").hasRole("USER")
+                                        .requestMatchers("/user", "/userDetails","/update/**").authenticated()
                         //.anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable).headers(header -> header.frameOptions(FrameOptionsConfig::disable));
@@ -90,5 +93,17 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public DefaultMethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(roleHierarchy);
+        return expressionHandler;
+    }
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        return fromHierarchy("ROLE_OWNER > ROLE_ADMIN > ROLE_USER");
     }
 }

@@ -8,7 +8,7 @@ After creating my user, using the valid credential restricted endpoint can be ac
 Role based authentication is enabled. Also, authority based authentication part is commented out in the code. 
 Event listeners are added to print logs for successful/failed authentication & authorization. 
 JWT token based authentication enabled, and it generates token on endpoint **/apiLogin** with proper email and password. 
-Method level filters are also in use.
+Method level filters are also in use. Role hierarchy is used now.
 
 > ## Endpoints
 > > ### Application base URL

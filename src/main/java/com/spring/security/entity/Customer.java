@@ -4,14 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.Set;
-
-import static jakarta.persistence.FetchType.EAGER;
-
 @Entity
 @Table(name = "customer")
 @Data
-@EqualsAndHashCode(exclude = "authorities") // Exclude authorities to prevent infinite recursion
+@EqualsAndHashCode(exclude = "authority") // Exclude authorities to prevent infinite recursion
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -21,6 +17,6 @@ public class Customer {
     private String email;
     @Column(name = "user_password")
     private String password;
-    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Authority> authorities;
+    @OneToOne(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Authority authority;
 }
