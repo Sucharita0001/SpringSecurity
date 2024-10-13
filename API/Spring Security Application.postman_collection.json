@@ -1,0 +1,179 @@
+{
+	"info": {
+		"_postman_id": "4a72edce-216b-4750-b90f-3836ab2d54cc",
+		"name": "Spring Security Application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33193233"
+	},
+	"item": [
+		{
+			"name": "Register New User",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"user101@testdev.com\",\r\n    \"password\": \"user@#$dev101\",\r\n    \"authority\": {\r\n        \"name\": \"ROLE_USER\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/register",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(pm.response.text());\r",
+							"pm.environment.set(\"AUTH_KEY\",data.jwtToken);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"user102@dev.com\",\r\n    \"password\":\"user@#$dev102\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/apiLogin",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"apiLogin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Details",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{AUTH_KEY}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/userDetails",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"userDetails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{AUTH_KEY}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/user",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update customer role",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{AUTH_KEY}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/update/admin/user107@dev.com",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"update",
+						"admin",
+						"user107@dev.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Admin only endpoint",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{AUTH_KEY}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/restricted/admin",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"restricted",
+						"admin"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

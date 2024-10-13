@@ -9,6 +9,8 @@ Role based authentication is enabled. Also, authority based authentication part 
 Event listeners are added to print logs for successful/failed authentication & authorization. 
 JWT token based authentication enabled, and it generates token on endpoint **/apiLogin** with proper email and password. 
 Method level filters are also in use. Role hierarchy is used now.
+> 
+> **Collection & Environment is present in API folder**
 
 > ## Endpoints
 > > ### Application base URL
@@ -16,10 +18,7 @@ Method level filters are also in use. Role hierarchy is used now.
 > > ### Open endpoints
 > > > /actuator, /open, /h2-console, /register, /apiLogin
 > > ### Restricted endpoints
-> > > /restricted, /restricted/admin, /restricted/user
-> > ### Sample user register body 
-> > > ![img_1.png](img_1.png)
-> > >  After this user creation restricted endpoint can be opened with valid credential (in this case user: user101@dev.com, password: user@#$dev101)
+> > > /restricted, /restricted/admin, /restricted/user, /update/admin/{email}
 
 > ## If password is not strong, it will give error as 
 > ![img.png](img.png)
